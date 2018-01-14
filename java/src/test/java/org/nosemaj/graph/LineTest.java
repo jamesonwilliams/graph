@@ -29,8 +29,8 @@ import java.util.Random;
 public final class LineTest {
 
     /**
-     * A random number generator used to construct arbitrary vertex
-     * values (since we don't care what they are).
+     * A random number generator used to obtain arbitrary vertex and
+     * weight values (since we don't care what they are).
      */
     private Random random;
 
@@ -43,15 +43,15 @@ public final class LineTest {
     }
 
     /**
-     * The {@link Line()} constructor should result in a line that has
-     * the requested endpoints appropriately set.
+     * Calling create should result in a line that has the requested
+     * endpoints appropriately set.
      */
     @Test
-    public void constructorShouldConstructEdgeWithRequestedEndpoints() {
-        Vertex<Float> one = new Vertex<>(random.nextFloat());
-        Vertex<Object> two = new Vertex<>(new Object());
+    public void createShouldCreateLineWithRequestedEndpoints() {
+        Vertex<Float> one = Vertex.create(random.nextFloat());
+        Vertex<Object> two = Vertex.create(new Object());
 
-        Edge edge = new Line(one, two);
+        Edge edge = Line.create(one, two);
 
         Assert.assertEquals(2, edge.endpoints().size());
         Assert.assertTrue(edge.endpoints().contains(one));
@@ -59,61 +59,50 @@ public final class LineTest {
     }
 
     /**
-     * Supplying a null first vertex to the constructor should throw an
+     * Supplying a null first vertex to create() should throw an
      * exception.
      * @throws IllegalArgumentException
      *         Expected result of this test
      */
     @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionWhenFirstArgNull() {
-        new Line(null, new Vertex<>(random.nextInt()));
+    public void createShouldThrowExceptionWhenFirstArgNull() {
+        Line.create(null, Vertex.create(random.nextInt()));
     }
 
     /**
-     * Supplying a null second vertex to the constructor should throw an
+     * Supplying a null second vertex to create() should throw an
      * exception.
      * @throws IllegalArgumentException
      *         Expected result of this test
      */
     @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionWhenSecondArgNull() {
-        new Line(new Vertex<>(random.nextInt()), null);
+    public void createShouldThrowExceptionWhenSecondArgNull() {
+        Line.create(Vertex.create(random.nextInt()), null);
     }
 
     /**
-     * Lines may not connect the same vertices, so ensure that
-     * construction of such a line is refused with an exception.
+     * Lines may not connect the same vertices, so ensure that creation
+     * of such a line is refused with an exception.
      * @throws IllegalArgumentException
      *         Expected result of this test
      */
     @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionWhenIdenticalVertices() {
-        Vertex<Object> vertex = new Vertex<>(new Object());
-        new Line(vertex, vertex);
-    }
-
-    /**
-     * The constructor should refuse to construct if it is passed a null
-     * value for the weight.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionOnNullWeight() {
-        Vertex<Object> first = new Vertex<>(new Object());
-        Vertex<Object> second = new Vertex<>(new Object());
-        new Line(first, second, null);
+    public void createShouldThrowExceptionWhenIdenticalVertices() {
+        Vertex<Object> vertex = Vertex.create(new Object());
+        Line.create(vertex, vertex);
     }
 
     /**
      * Asking for the weight should return the same value that was
-     * passed into the constructor.
+     * passed into create().
      */
     @Test
-    public void weightShouldReturnValueFromConstructor() {
-        Vertex<Object> first = new Vertex<>(new Object());
-        Vertex<Object> second = new Vertex<>(new Object());
+    public void weightShouldReturnValueFromCreate() {
+        Vertex<Object> first = Vertex.create(new Object());
+        Vertex<Object> second = Vertex.create(new Object());
         Boolean weight = random.nextBoolean();
 
-        Line line = new Line(first, second, weight);
+        Line line = Line.create(first, second, weight);
 
         Assert.assertEquals(weight, line.weight());
     }
@@ -125,11 +114,10 @@ public final class LineTest {
     @Test(expected = UnsupportedOperationException.class)
     public void endpointsShouldNotBeModifiable() {
         Boolean value = random.nextBoolean();
-        Vertex<Boolean> one = new Vertex<>(value);
-        Vertex<Boolean> two = new Vertex<>(!value);
+        Vertex<Boolean> vertex = Vertex.create(value);
+        Edge edge = Line.create(vertex, Vertex.create(!value));
 
-        Edge edge = new Line(one, two);
-        edge.endpoints().remove(one);
+        edge.endpoints().remove(vertex);
     }
 
     /**
@@ -140,13 +128,9 @@ public final class LineTest {
     @Test(expected = UnsupportedOperationException.class)
     public void endpointsShouldNotBeAugmentable() {
         Boolean value = random.nextBoolean();
-        Vertex<Boolean> one = new Vertex<>(value);
-        Vertex<Boolean> two = new Vertex<>(!value);
+        Edge edge = Line.create(Vertex.create(value), Vertex.create(!value));
 
-        Edge edge = new Line(one, two);
-
-        Vertex<Boolean> newVertex = new Vertex<>(random.nextBoolean());
-        edge.endpoints().add(newVertex);
+        edge.endpoints().add(Vertex.create(random.nextBoolean()));
     }
 
     /**
@@ -155,10 +139,7 @@ public final class LineTest {
     @Test
     public void equalsShouldReturnTrueWhenArgIsSelf() {
         Boolean value = random.nextBoolean();
-        Vertex<Boolean> one = new Vertex<>(value);
-        Vertex<Boolean> two = new Vertex<>(!value);
-
-        Edge edge = new Line(one, two);
+        Edge edge = Line.create(Vertex.create(value), Vertex.create(!value));
 
         Assert.assertEquals(edge, edge);
     }
@@ -168,15 +149,12 @@ public final class LineTest {
      * connections between different endpoints.
      */
     @Test
-    public void equalsShouldReturnFalseWhenEdgesConnectDifferentEndpoints() {
+    public void equalsShouldReturnFalseWhenLinesConnectDifferentEndpoints() {
         Integer value = random.nextInt();
         int offset = 0;
-        Vertex<Integer> one = new Vertex<>(value + offset++);
-        Vertex<Integer> two = new Vertex<>(value + offset++);
-        Vertex<Integer> three = new Vertex<>(value + offset++);
-
-        Edge edge = new Line(one, two);
-        Edge different = new Line(one, three);
+        Vertex<Integer> vertex = Vertex.create(value + offset++);
+        Edge edge = Line.create(vertex, Vertex.create(value + offset++));
+        Edge different = Line.create(vertex, Vertex.create(value + offset++));
 
         Assert.assertNotEquals(edge, different);
     }
@@ -186,15 +164,12 @@ public final class LineTest {
      * represent connections to the same vertices.
      */
     @Test
-    public void equalsShouldReturnTrueWhenEdgesConnectSameEndpoints() {
+    public void equalsShouldReturnTrueWhenLinesConnectSameEndpoints() {
 
-        Vertex<Date> one = new Vertex<>(new Date());
-        Vertex<Object> two = new Vertex<>(new Object());
+        Vertex<Date> one = Vertex.create(new Date());
+        Vertex<Object> two = Vertex.create(new Object());
 
-        Edge edge = new Line(one, two);
-        Edge other = new Line(two, one);
-
-        Assert.assertEquals(edge, other);
+        Assert.assertEquals(Line.create(one, two), Line.create(two, one));
     }
 
     /**
@@ -202,12 +177,10 @@ public final class LineTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenComparingDifferentObjectClass() {
-        Vertex<Double> one = new Vertex<>(random.nextDouble());
-        Vertex<Long> two = new Vertex<>(random.nextLong());
+        Vertex<Long> vertex = Vertex.create(random.nextLong());
+        Edge edge = Line.create(Vertex.create(random.nextDouble()), vertex);
 
-        Edge edge = new Line(one, two);
-
-        Assert.assertNotEquals(edge, two);
+        Assert.assertNotEquals(edge, vertex);
     }
 
     /**
@@ -215,11 +188,10 @@ public final class LineTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenComparingAgainstNull() {
-        Vertex<Object> one = new Vertex<>(new Object());
-        Vertex<Object> two = new Vertex<>(new Object());
-        Edge edge = new Line(one, two);
+        Vertex<Object> one = Vertex.create(new Object());
+        Vertex<Object> two = Vertex.create(new Object());
 
-        Assert.assertNotEquals(edge, null);
+        Assert.assertNotEquals(Line.create(one, two), null);
     }
 
     /**
@@ -228,12 +200,12 @@ public final class LineTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenWeightsDiffer() {
-        Vertex<Long> firstVertex = new Vertex<>(random.nextLong());
-        Vertex<Long> secondVertex = new Vertex<>(random.nextLong());
+        Vertex<Long> firstVertex = Vertex.create(random.nextLong());
+        Vertex<Long> secondVertex = Vertex.create(random.nextLong());
         Boolean weight = random.nextBoolean();
 
-        Line first = new Line(firstVertex, secondVertex, weight);
-        Line second = new Line(firstVertex, secondVertex, !weight);
+        Line first = Line.create(firstVertex, secondVertex, weight);
+        Line second = Line.create(firstVertex, secondVertex, !weight);
 
         Assert.assertNotEquals(first, second);
     }
@@ -244,12 +216,12 @@ public final class LineTest {
     @Test
     public void hashCodeShouldReturnDistinctHashesForDistinctEndpointConfigs() {
 
-        Vertex<Object> firstVertex = new Vertex<>(new Object());
-        Vertex<Object> secondVertex = new Vertex<>(new Object());
-        Vertex<Object> thirdVertex = new Vertex<>(new Object());
+        Vertex<Object> firstVertex = Vertex.create(new Object());
+        Vertex<Object> secondVertex = Vertex.create(new Object());
+        Vertex<Object> thirdVertex = Vertex.create(new Object());
 
-        Edge one = new Line(firstVertex, secondVertex);
-        Edge two = new Line(secondVertex, thirdVertex);
+        Edge one = Line.create(firstVertex, secondVertex);
+        Edge two = Line.create(secondVertex, thirdVertex);
 
         Assert.assertNotEquals(one.hashCode(), two.hashCode());
     }
@@ -259,11 +231,11 @@ public final class LineTest {
      */
     @Test
     public void hashCodeShouldReturnSameHashesForSameEndpointConfigs() {
-        Vertex<Object> firstVertex = new Vertex<>(new Object());
-        Vertex<Object> secondVertex = new Vertex<>(new Object());
+        Vertex<Object> firstVertex = Vertex.create(new Object());
+        Vertex<Object> secondVertex = Vertex.create(new Object());
 
-        Edge one = new Line(firstVertex, secondVertex);
-        Edge two = new Line(secondVertex, firstVertex);
+        Edge one = Line.create(firstVertex, secondVertex);
+        Edge two = Line.create(secondVertex, firstVertex);
 
         Assert.assertEquals(one.hashCode(), two.hashCode());
     }
@@ -274,12 +246,12 @@ public final class LineTest {
      */
     @Test
     public void hashCodeShouldReturnDifferentCodeWhenDifferentWeights() {
-        Vertex<Long> firstVertex = new Vertex<>(random.nextLong());
-        Vertex<Long> secondVertex = new Vertex<>(random.nextLong());
+        Vertex<Long> firstVertex = Vertex.create(random.nextLong());
+        Vertex<Long> secondVertex = Vertex.create(random.nextLong());
         Boolean weight = random.nextBoolean();
 
-        Line first = new Line(firstVertex, secondVertex, weight);
-        Line second = new Line(firstVertex, secondVertex, !weight);
+        Line first = Line.create(firstVertex, secondVertex, weight);
+        Line second = Line.create(firstVertex, secondVertex, !weight);
 
         Assert.assertNotEquals(first.hashCode(), second.hashCode());
     }

@@ -29,8 +29,9 @@ import java.util.Random;
 public final class ArrowTest {
 
     /**
-     * A random number generator used to construct arbitrary arrow
-     * values (since we don't care what they are).
+     * A random number generator used to obtain arbitrary vertex and
+     * weight values (since we don't care what they are, just possibly
+     * how they relate to one another).
      */
     private Random random;
 
@@ -43,15 +44,15 @@ public final class ArrowTest {
     }
 
     /**
-     * The {@link Arrow()} constructor should result in an arrow that
-     * has the requested endpoints appropriately set.
+     * Calling create should result in an arrow that has the requested
+     * endpoints appropriately set.
      */
     @Test
-    public void constructorShouldConstructArrowWithRequestedEndpoints() {
-        Vertex<Float> source = new Vertex<>(random.nextFloat());
-        Vertex<Object> target = new Vertex<>(new Object());
+    public void createShouldCreateArrowWithRequestedEndpoints() {
+        Vertex<Float> source = Vertex.create(random.nextFloat());
+        Vertex<Object> target = Vertex.create(new Object());
 
-        Arrow arrow = new Arrow(source, target);
+        Arrow arrow = Arrow.create(source, target);
 
         Assert.assertEquals(2, arrow.endpoints().size());
         Assert.assertTrue(arrow.endpoints().contains(source));
@@ -61,35 +62,35 @@ public final class ArrowTest {
     }
 
     /**
-     * Supplying a null first endpoint to the constructor should throw
-     * an exception.
+     * Supplying null as first argument to create should throw an
+     * exception.
      * @throws IllegalArgumentException
      *         Expected result of this test
      */
     @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionWhenFirstArgNull() {
-        new Arrow(null, new Vertex<>(random.nextInt()));
+    public void createShouldThrowExceptionWhenFirstArgNull() {
+        Arrow.create(null, Vertex.create(random.nextInt()));
     }
 
     /**
-     * Supplying a null second endpoint to the constructor should throw
-     * an exception.
+     * Supplying null as second endpoint to create should throw an
+     * exception.
      * @throws IllegalArgumentException
      *         Expected result of this test
      */
     @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionWhenSecondArgNull() {
-        new Arrow(new Vertex<>(random.nextInt()), null);
+    public void createShouldThrowExceptionWhenSecondArgNull() {
+        Arrow.create(Vertex.create(random.nextInt()), null);
     }
 
     /**
      * Arrows allow self loops (where source == target).
      */
     @Test
-    public void constructorShouldAllowSelfLoop() {
-        Vertex<Object> vertex = new Vertex<>(new Object());
+    public void createShouldAllowSelfLoop() {
+        Vertex<Object> vertex = Vertex.create(new Object());
 
-        Arrow arrow = new Arrow(vertex, vertex);
+        Arrow arrow = Arrow.create(vertex, vertex);
 
         Assert.assertEquals(2, arrow.endpoints().size());
         Assert.assertTrue(arrow.endpoints().contains(vertex));
@@ -98,28 +99,15 @@ public final class ArrowTest {
     }
 
     /**
-     * The constructor should refuse to construct when passed a null
-     * weight.
-     */
-    @Test(expected = IllegalArgumentException.class)
-    public void constructorShouldThrowExceptionOnNullWeight() {
-        Vertex<Long> source = new Vertex<>(random.nextLong());
-        Vertex<Long> target = new Vertex<>(random.nextLong());
-
-        new Arrow(source, target, null);
-    }
-
-    /**
      * Asking for the weight should return the same value that was
-     * passed into the constructor.
+     * passed into create().
      */
     @Test
-    public void weightShouldReturnValueFromConstructor() {
-        Vertex<Long> source = new Vertex<>(random.nextLong());
-        Vertex<Long> target = new Vertex<>(random.nextLong());
+    public void weightShouldReturnValueFromCreate() {
+        Vertex<Long> vertex = Vertex.create(random.nextLong());
         Boolean weight = random.nextBoolean();
 
-        Arrow arrow = new Arrow(source, target, weight);
+        Arrow arrow = Arrow.create(vertex, vertex, weight);
 
         Assert.assertEquals(weight, arrow.weight());
     }
@@ -130,11 +118,9 @@ public final class ArrowTest {
      */
     @Test(expected = UnsupportedOperationException.class)
     public void endpointsShouldNotBeChangeable() {
-        Vertex<Boolean> vertex = new Vertex<>(random.nextBoolean());
+        Vertex<Boolean> vertex = Vertex.create(random.nextBoolean());
 
-        Edge edge = new Arrow(vertex, vertex);
-
-        edge.endpoints().remove(vertex);
+        Arrow.create(vertex, vertex).endpoints().remove(vertex);
     }
 
     /**
@@ -144,11 +130,9 @@ public final class ArrowTest {
     @SuppressWarnings("unchecked") // add() on Collection
     @Test(expected = UnsupportedOperationException.class)
     public void endpointsShouldNotBeAugmentable() {
-        Vertex<Boolean> vertex = new Vertex<>(random.nextBoolean());
+        Vertex<Boolean> vertex = Vertex.create(random.nextBoolean());
 
-        Edge edge = new Arrow(vertex, vertex);
-
-        edge.endpoints().add(vertex);
+        Arrow.create(vertex, vertex).endpoints().add(vertex);
     }
 
     /**
@@ -157,10 +141,7 @@ public final class ArrowTest {
     @Test
     public void equalsShouldReturnTrueWhenArgIsSelf() {
         Boolean value = random.nextBoolean();
-        Vertex<Boolean> source = new Vertex<>(value);
-        Vertex<Boolean> target = new Vertex<>(!value);
-
-        Edge edge = new Arrow(source, target);
+        Edge edge = Arrow.create(Vertex.create(value), Vertex.create(!value));
 
         Assert.assertEquals(edge, edge);
     }
@@ -173,12 +154,9 @@ public final class ArrowTest {
     public void equalsShouldReturnFalseWhenArrowsConnectDifferentEndpoints() {
         Integer value = random.nextInt();
         int offset = 0;
-        Vertex<Integer> source = new Vertex<>(value + offset++);
-        Vertex<Integer> edgeTarget = new Vertex<>(value + offset++);
-        Vertex<Integer> differentTarget = new Vertex<>(value + offset++);
-
-        Edge edge = new Arrow(source, edgeTarget);
-        Edge different = new Arrow(source, differentTarget);
+        Vertex<Integer> source = Vertex.create(value + offset++);
+        Edge edge = Arrow.create(source, Vertex.create(value + offset++));
+        Edge different = Arrow.create(source, Vertex.create(value + offset++));
 
         Assert.assertNotEquals(edge, different);
     }
@@ -190,11 +168,11 @@ public final class ArrowTest {
     @Test
     public void equalsShouldReturnFalseWhenSourceAndTargetReversed() {
 
-        Vertex<Date> source = new Vertex<>(new Date());
-        Vertex<Object> target = new Vertex<>(new Object());
+        Vertex<Date> source = Vertex.create(new Date());
+        Vertex<Object> target = Vertex.create(new Object());
 
-        Edge forward = new Arrow(source, target);
-        Edge reverse = new Arrow(target, source);
+        Edge forward = Arrow.create(source, target);
+        Edge reverse = Arrow.create(target, source);
 
         Assert.assertNotEquals(forward, reverse);
     }
@@ -204,13 +182,11 @@ public final class ArrowTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenComparingDifferentObjectClass() {
-        Vertex<Double> source = new Vertex<>(random.nextDouble());
-        Vertex<Long> target = new Vertex<>(random.nextLong());
+        Vertex<Double> vertex = Vertex.create(random.nextDouble());
+        Edge edge = Arrow.create(vertex, Vertex.create(random.nextLong()));
 
-        Edge edge = new Arrow(source, target);
-
-        // edge is of type arrow, source is of type vertex
-        Assert.assertNotEquals(edge, source);
+        // edge is of type arrow, vertex is of type vertex
+        Assert.assertNotEquals(edge, vertex);
     }
 
     /**
@@ -219,11 +195,10 @@ public final class ArrowTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenComparingAgainstNull() {
-        Vertex<Object> source = new Vertex<>(new Object());
-        Vertex<Object> target = new Vertex<>(new Object());
-        Edge edge = new Arrow(source, target);
+        Vertex<Object> source = Vertex.create(new Object());
+        Vertex<Object> target = Vertex.create(new Object());
 
-        Assert.assertNotEquals(edge, null);
+        Assert.assertNotEquals(Arrow.create(source, target), null);
     }
 
     /**
@@ -232,12 +207,12 @@ public final class ArrowTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenWeightsDiffer() {
-        Vertex<Long> firstVertex = new Vertex<>(random.nextLong());
-        Vertex<Long> secondVertex = new Vertex<>(random.nextLong());
+        Vertex<Long> firstVertex = Vertex.create(random.nextLong());
+        Vertex<Long> secondVertex = Vertex.create(random.nextLong());
         Boolean weight = random.nextBoolean();
 
-        Arrow first = new Arrow(firstVertex, secondVertex, weight);
-        Arrow second = new Arrow(firstVertex, secondVertex, !weight);
+        Arrow first = Arrow.create(firstVertex, secondVertex, weight);
+        Arrow second = Arrow.create(firstVertex, secondVertex, !weight);
 
         Assert.assertNotEquals(first, second);
     }
@@ -249,12 +224,12 @@ public final class ArrowTest {
     @Test
     public void hashCodeShouldReturnDistinctHashesForDistinctEndpointConfigs() {
 
-        Vertex<Object> firstVertex = new Vertex<>(new Object());
-        Vertex<Object> secondVertex = new Vertex<>(new Object());
-        Vertex<Object> thirdVertex = new Vertex<>(new Object());
+        Vertex<Object> firstVertex = Vertex.create(new Object());
+        Vertex<Object> secondVertex = Vertex.create(new Object());
+        Vertex<Object> thirdVertex = Vertex.create(new Object());
 
-        Edge one = new Arrow(firstVertex, secondVertex);
-        Edge two = new Arrow(secondVertex, thirdVertex);
+        Edge one = Arrow.create(firstVertex, secondVertex);
+        Edge two = Arrow.create(secondVertex, thirdVertex);
 
         Assert.assertNotEquals(one.hashCode(), two.hashCode());
     }
@@ -265,11 +240,11 @@ public final class ArrowTest {
     @Test
     public void hashCodeShouldReturnSameHashesForIdenticalEndpointConfigs() {
         Object object = new Object();
-        Vertex<Object> source = new Vertex<>(object);
-        Vertex<Object> target = new Vertex<>(object);
+        Vertex<Object> source = Vertex.create(object);
+        Vertex<Object> target = Vertex.create(object);
 
-        Edge one = new Arrow(source, target);
-        Edge two = new Arrow(source, target);
+        Edge one = Arrow.create(source, target);
+        Edge two = Arrow.create(source, target);
 
         Assert.assertEquals(one.hashCode(), two.hashCode());
     }
@@ -280,11 +255,11 @@ public final class ArrowTest {
      */
     @Test
     public void hashCodeShouldReturnDifferentHashForReversedDirection() {
-        Vertex<Object> source = new Vertex<>(new Object());
-        Vertex<Object> target = new Vertex<>(new Object());
+        Vertex<Object> source = Vertex.create(new Object());
+        Vertex<Object> target = Vertex.create(new Object());
 
-        Edge forward = new Arrow(source, target);
-        Edge reverse = new Arrow(target, source);
+        Edge forward = Arrow.create(source, target);
+        Edge reverse = Arrow.create(target, source);
 
         Assert.assertNotEquals(forward.hashCode(), reverse.hashCode());
     }
@@ -295,12 +270,12 @@ public final class ArrowTest {
      */
     @Test
     public void hashCodeShouldReturnDifferentCodeWhenDifferentWeights() {
-        Vertex<Long> source = new Vertex<>(random.nextLong());
-        Vertex<Long> target = new Vertex<>(random.nextLong());
+        Vertex<Long> source = Vertex.create(random.nextLong());
+        Vertex<Long> target = Vertex.create(random.nextLong());
         Boolean weight = random.nextBoolean();
 
-        Arrow first = new Arrow(source, target, weight);
-        Arrow second = new Arrow(source, target, !weight);
+        Arrow first = Arrow.create(source, target, weight);
+        Arrow second = Arrow.create(source, target, !weight);
 
         Assert.assertNotEquals(first.hashCode(), second.hashCode());
     }

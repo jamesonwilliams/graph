@@ -28,8 +28,7 @@ import java.util.Random;
 public final class VertexTest {
 
     /**
-     * A random number generator used to construct arbitrary vertex
-     * values.
+     * A random number generator used to obtain arbitrary vertex values.
      */
     private Random random;
 
@@ -42,16 +41,21 @@ public final class VertexTest {
     }
 
     /**
-     * The {@link Vertex(T)} constructor should result in a vertex
-     * that stores the expected value.
+     * Creating a vertex from value should result in a vertex that
+     * stores the expected value.
      */
     @Test
-    public void constructorShouldReturnValidVertex() {
+    public void createShouldReturnValidVertex() {
         Float value = random.nextFloat();
+        Assert.assertEquals(value, Vertex.create(value).value(), 0f);
+    }
 
-        Vertex<Float> vertex = new Vertex<>(value);
-
-        Assert.assertEquals(value, vertex.value(), 0f);
+    /**
+     * It should be alright to create vertex with null value.
+     */
+    @Test
+    public void createFromNullShouldReturnVertex() {
+        Assert.assertEquals(null, Vertex.create(null).value());
     }
 
     /**
@@ -59,8 +63,7 @@ public final class VertexTest {
      */
     @Test
     public void equalsShouldReturnTrueWhenVertexIsSelf() {
-        Vertex<Boolean> vertex = new Vertex<>(random.nextBoolean());
-
+        Vertex<Boolean> vertex = Vertex.create(random.nextBoolean());
         Assert.assertEquals(vertex, vertex);
     }
 
@@ -71,10 +74,7 @@ public final class VertexTest {
     @Test
     public void equalsShouldReturnFalseWhenVertexHasDifferentValue() {
         Boolean value = random.nextBoolean();
-        Vertex<Boolean> vertex = new Vertex<>(value);
-        Vertex<Boolean> different = new Vertex<>(!value);
-
-        Assert.assertNotEquals(vertex, different);
+        Assert.assertNotEquals(Vertex.create(value), Vertex.create(!value));
     }
 
     /**
@@ -84,10 +84,7 @@ public final class VertexTest {
     @Test
     public void equalsShouldReturnTrueWhenVertexHasSameValue() {
         Long value = random.nextLong();
-        Vertex<Long> vertex = new Vertex<>(value);
-        Vertex<Long> other = new Vertex<>(value);
-
-        Assert.assertEquals(vertex, other);
+        Assert.assertEquals(Vertex.create(value), Vertex.create(value));
     }
 
     /**
@@ -96,10 +93,7 @@ public final class VertexTest {
     @Test
     public void equalsShouldReturnFalseWhenArgumentIsDifferentObjectClass() {
         double value = random.nextDouble();
-        Vertex<Double> vertex = new Vertex<>(value);
-        Double other = Double.valueOf(value);
-
-        Assert.assertNotEquals(vertex, other);
+        Assert.assertNotEquals(Vertex.create(value), Double.valueOf(value));
     }
 
     /**
@@ -108,8 +102,8 @@ public final class VertexTest {
     @Test
     public void equalsShouldReturnFalseWhenVertexUsesDifferentTemplate() {
         int value = random.nextInt();
-        Vertex<Integer> vertex = new Vertex<>(value);
-        Vertex<Long> other = new Vertex<>((long) value);
+        Vertex<Integer> vertex = Vertex.create(value);
+        Vertex<Long> other = Vertex.create((long) value);
 
         Assert.assertNotEquals(vertex, other);
     }
@@ -120,8 +114,7 @@ public final class VertexTest {
      */
     @Test
     public void equalsShouldReturnFalseWhenArgumentIsNull() {
-        Vertex<Object> vertex = new Vertex<>(new Object());
-        Assert.assertNotEquals(vertex, null);
+        Assert.assertNotEquals(Vertex.create(new Object()), null);
     }
 
     /**
@@ -129,10 +122,8 @@ public final class VertexTest {
      */
     @Test
     public void hashCodeShouldReturnDistinctHashesForDistinctVertices() {
-
-        Vertex<Object> one = new Vertex<>(new Object());
-        Vertex<Object> two = new Vertex<>(new Object());
-
+        Vertex<Object> one = Vertex.create(new Object());
+        Vertex<Object> two = Vertex.create(new Object());
         Assert.assertNotEquals(one.hashCode(), two.hashCode());
     }
 
@@ -143,8 +134,8 @@ public final class VertexTest {
     @Test
     public void hashCodeShouldReturnSameHashesForSameVertices() {
         Object sameValue = new Object();
-        Vertex<Object> one = new Vertex<>(sameValue);
-        Vertex<Object> two = new Vertex<>(sameValue);
+        Vertex<Object> one = Vertex.create(sameValue);
+        Vertex<Object> two = Vertex.create(sameValue);
 
         Assert.assertEquals(one.hashCode(), two.hashCode());
     }

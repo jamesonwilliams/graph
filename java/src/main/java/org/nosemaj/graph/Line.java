@@ -28,7 +28,7 @@ import java.util.Set;
  * Line is an undirected edge, defined by a simple set of two endpoints.
  * There is no distinction between the two endpoints, but the endpoints
  * must be unique. A line may have a weight; by default the weight is
- * the Boolean value true, indicating that the line exists.
+ * null.
  */
 public final class Line implements Edge {
 
@@ -43,25 +43,16 @@ public final class Line implements Edge {
     private final Comparable weight;
 
     /**
-     * Constructs a Line.
-     * @param first The first of the two (not necessarily distinct)
-     *              endpoints in the line
-     * @param second The second of the two (not necessarily distinct)
-     *               endpoints in the line
-     */
-    public Line(final Vertex first, final Vertex second) {
-        this(first, second, true);
-    }
-
-    /**
      * Constructs a new weighted Line.
      * @param first The first of the two (not necessarily distinct)
      *              endpoints in the line
      * @param second The second of the two (not necessarily distinct)
      *               endpoints in the line
      * @param weight The weight of the line
+     * @throws IllegalArgumentException
+     *         If either vertex is null, or if they are equal
      */
-    public Line(final Vertex first, final Vertex second,
+    private Line(final Vertex first, final Vertex second,
             final Comparable weight) {
 
         Preconditions.notNull(first, "first vertex must be non-null.");
@@ -72,9 +63,39 @@ public final class Line implements Edge {
         this.endpoints = new HashSet<>();
         this.endpoints.add(first);
         this.endpoints.add(second);
-
-        Preconditions.notNull(weight, "weight must be non-null.");
         this.weight = weight;
+    }
+
+    /**
+     * Creates a line between two endpoints.
+     * @param first The first of the two (not necessarily distinct)
+     *              endpoints in the line
+     * @param second The second of the two (not necessarily distinct)
+     *               endpoints in the line
+     * @return A new line which connects the given vertices
+     * @throws IllegalArgumentException
+     *         If either vertex is null, or if they are equal
+     */
+    public static Line create(final Vertex first, final Vertex second)
+            throws IllegalArgumentException {
+        return new Line(first, second, null);
+    }
+
+    /**
+     * Creates a weighted line between two endpoints.
+     * @param first The first of the two (not necessarily distinct)
+     *              endpoints in the line
+     * @param second The second of the two (not necessarily distinct)
+     *               endpoints in the line
+     * @param weight The weight of the line
+     * @return A new line which connects the given vertices
+     * @throws IllegalArgumentException
+     *         If any argument is null, or if vertices are equal
+     */
+    public static Line create(final Vertex first, final Vertex second,
+            final Comparable weight) throws IllegalArgumentException {
+        Preconditions.notNull(weight, "weight == null");
+        return new Line(first, second, weight);
     }
 
     @Override

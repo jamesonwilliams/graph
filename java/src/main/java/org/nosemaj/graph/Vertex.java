@@ -33,8 +33,18 @@ public final class Vertex<T> {
      * Constructs a new Vertex.
      * @param value The value stored in the vertex
      */
-    public Vertex(final T value) {
+    private Vertex(final T value) {
         this.value = value;
+    }
+
+    /**
+     * Creates a vertex from a value.
+     * @param value The value to store in the vertex
+     * @param <T> The type of the value
+     * @return A vertex containing a value
+     */
+    public static <T> Vertex<T> create(final T value) {
+        return new Vertex<T>(value);
     }
 
     /**
