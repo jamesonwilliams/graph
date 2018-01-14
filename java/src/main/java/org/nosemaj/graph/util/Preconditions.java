@@ -44,6 +44,43 @@ public final class Preconditions {
     }
 
     /**
+     * Checks if the provided object is null; throws an illegal argument
+     * exception if it is not, including the provided message.
+     * @param object The object to ensure is null
+     * @param message Message to include in exception, it object is not null
+     * @throws IllegalArgumentException when provided object is not null
+     */
+    public static void isNull(final Object object, final String message)
+            throws IllegalArgumentException {
+
+        check(object == null, message);
+    }
+
+    /**
+     * Checks if the provided condition is true; throws an illegal
+     * argument exception if not true, including the provided message.
+     * @param condition The condition to check for truth
+     * @param message Message to include in exception, if condition false
+     * @throws IllegalArgumentException when condition is false
+     */
+    public static void isTrue(final boolean condition, final String message)
+            throws IllegalArgumentException {
+        check(condition, message);
+    }
+
+    /**
+     * Checks if the provided condition is false; throws an illegal
+     * argument exception if its true, including the provided message.
+     * @param condition The condition to check for falsehood
+     * @param message Message to include in exception, if condition true
+     * @throws IllegalArgumentException when condition is true
+     */
+    public static void isFalse(final boolean condition, final String message)
+            throws IllegalArgumentException {
+        check(!condition, message);
+    }
+
+    /**
      * Checks that two objects are not equal to one another.
      * @param first An object
      * @param second An object

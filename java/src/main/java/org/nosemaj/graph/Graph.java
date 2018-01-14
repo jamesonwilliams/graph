@@ -25,22 +25,15 @@ import java.util.Set;
 public interface Graph {
 
     /**
-     * Tests whether there is an edge between two vertices.
-     * @param thisVertex An arbitrary vertex to check for adjacency
-     * @param thatVertex An arbitrary vertex to check for adjacency
-     * @return true if there if there is an edge between the two
-     *         vertices, in this Graph; false, otherwise
-     */
-    boolean adjacent(Vertex thisVertex, Vertex thatVertex);
-
-    /**
      * Gets the vertices which are directly connected to a given vertex
      * by an edge.
      * @param vertex An arbitary vertex
      * @return The set of vertexes which are connected to the provided
      *         vertex; possibly an empty set
+     * @throws IllegalArgumentException
+     *         If vertex is not known to the graph
      */
-    Set<Vertex> neighbors(Vertex vertex);
+    Set<Vertex> neighbors(Vertex vertex) throws IllegalArgumentException;
 
     /**
      * Adds a vertex to the graph, if it's not already there.
@@ -48,7 +41,7 @@ public interface Graph {
      * @throws IllegalArgumentException
      *         if the vertex is already in the graph
      */
-    void addVertex(Vertex vertex) throws IllegalArgumentException;
+    void add(Vertex vertex) throws IllegalArgumentException;
 
     /**
      * Removes a vertex from the graph, if it is in it.
@@ -56,7 +49,20 @@ public interface Graph {
      * @throws IllegalArgumentException
      *         If the vertex was not in the graph
      */
-    void removeVertex(Vertex vertex) throws IllegalArgumentException;
+    void remove(Vertex vertex) throws IllegalArgumentException;
+
+    /**
+     * Checks if a vertex is in the graph.
+     * @param vertex A vertex that may be in the graph
+     * @return true if the vertex is in the graph; false, otherwise
+     */
+    boolean contains(Vertex vertex);
+
+    /**
+     * Gets the vertex set.
+     * @return The vertex set
+     */
+    Set<Vertex> vertices();
 
     /**
      * Adds an edge to the graph, if not already there.
@@ -64,7 +70,7 @@ public interface Graph {
      * @throws IllegalArgumentException
      *         If the edge is already in the graph
      */
-    void addEdge(Edge edge) throws IllegalArgumentException;
+    void add(Edge edge) throws IllegalArgumentException;
 
     /**
      * Removes and edge from the graph, if there.
@@ -72,5 +78,15 @@ public interface Graph {
      * @throws IllegalArgumentException
      *         If the edge wasn't in the graph originally
      */
-    void removeEdge(Edge edge) throws IllegalArgumentException;
+    void remove(Edge edge) throws IllegalArgumentException;
+
+    /**
+     * Checks whether an edge exists in the graph.
+     * @param edge An edge
+     * @return true if edge exists in graph; false, otherwise
+     * @throws IllegalArgumentException
+     *         If edge is null, or if either endpoints of edge is not
+     *         known to the graph
+     */
+    boolean contains(Edge edge) throws IllegalArgumentException;
 }

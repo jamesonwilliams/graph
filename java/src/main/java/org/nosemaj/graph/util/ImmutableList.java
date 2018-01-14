@@ -46,6 +46,7 @@ public final class ImmutableList {
      * @param <T> The type of item in the list
      * @return An immutable list of the items
      */
+    @SafeVarargs
     public static <T> List<T> of(final T... items) {
         return Collections.unmodifiableList(Arrays.asList(items));
     }

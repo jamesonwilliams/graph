@@ -87,6 +87,62 @@ public final class PreconditionsTest {
     }
 
     /**
+     * The isNull precondition must throw an illegal argument exception
+     * if it is passed a non-null argument.
+     * @throws IllegalArgumentException
+     *         This is the expected test pass behavior
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void isNullShouldThrowExceptionWhenArgumentIsNotNull() {
+        Preconditions.isNull(new Object(), RandomString.nextString());
+    }
+
+    /**
+     * The isNull precondition should be a no-op when the argument
+     * passed to it is null.
+     */
+    @Test
+    public void isNullShouldDoNothingWhenArgumentNotNull() {
+        Preconditions.isNull(null, RandomString.nextString());
+    }
+
+    /**
+     * The isTrue precondition should be a no-op when the condition
+     * passed to it is true.
+     */
+    @Test
+    public void isTrueShouldDoNothingWhenCondtionIsTrue() {
+        Preconditions.isTrue(true, RandomString.nextString());
+    }
+
+    /**
+     * The isTrue precondition should throw an excetpion when the
+     * condition passed to it is false.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void isTrueShouldThrowExceptionWhenConditionIsFalse() {
+        Preconditions.isTrue(false, RandomString.nextString());
+    }
+
+    /**
+     * The isFalse precondition should be a no-op when the condition
+     * passed to it is false.
+     */
+    @Test
+    public void isFalseShouldDoNothingWhenCondtionIsFalse() {
+        Preconditions.isFalse(false, RandomString.nextString());
+    }
+
+    /**
+     * The isTrue precondition should throw an excetpion when the
+     * condition passed to it is false.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void isFalseShouldThrowExceptionWhenConditionIsTrue() {
+        Preconditions.isFalse(true, RandomString.nextString());
+    }
+
+    /**
      * The notEqual precondition should throw an exception if the
      * arguments are not distinct.
      */
