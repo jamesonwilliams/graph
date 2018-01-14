@@ -16,21 +16,27 @@
 
 package org.nosemaj.graph;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Edges are connections between two vertices.
  *
- * @param <C> The type of collection which is used to store the two
- *            edges; in general, an edge does not prescribe properties
- *            of this collection (ordered, not) however implementations
- *            may.
+ * Note: the collection of endpoints in an edge is not strictly speaking
+ * a list, however, this is the only sane way to access individual
+ * vertices without imposing methods with semantic baggage ("first",
+ * "source", etc.)
  */
-interface Edge<C extends Collection<Vertex>> {
+interface Edge {
 
     /**
-     * Gets the vertices that comprise the edge.
+     * Gets the vertices on either end of the edge.
      * @return The vertices that comprise the edge
      */
-    C vertices();
+    List<Vertex> endpoints();
+
+    /**
+     * Gets the weight of the edge.
+     * @return A weight value for the edge
+     */
+    Comparable weight();
 }
