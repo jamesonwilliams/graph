@@ -22,13 +22,14 @@ import org.nosemaj.graph.util.ImmutableList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * Line is an undirected edge, defined by a simple set of two endpoints.
  * There is no distinction between the two endpoints, but the endpoints
- * must be unique. A line may have a weight; by default the weight is
- * null.
+ * must be unique. A line may have a weight; by default the optional
+ * weight is not present.
  */
 public final class Line implements Edge {
 
@@ -40,7 +41,7 @@ public final class Line implements Edge {
     /**
      * The weight of the line.
      */
-    private final Comparable weight;
+    private final Optional<Comparable> weight;
 
     /**
      * Constructs a new weighted Line.
@@ -48,12 +49,12 @@ public final class Line implements Edge {
      *              endpoints in the line
      * @param second The second of the two (not necessarily distinct)
      *               endpoints in the line
-     * @param weight The weight of the line
+     * @param weight An optional weight for the line
      * @throws IllegalArgumentException
      *         If either vertex is null, or if they are equal
      */
     private Line(final Vertex first, final Vertex second,
-            final Comparable weight) {
+            final Optional<Comparable> weight) {
 
         Preconditions.notNull(first, "first vertex must be non-null.");
         Preconditions.notNull(second, "second vertex must be non-null.");
@@ -67,7 +68,7 @@ public final class Line implements Edge {
     }
 
     /**
-     * Creates a line between two endpoints.
+     * Creates an unweighted line between two endpoints.
      * @param first The first of the two (not necessarily distinct)
      *              endpoints in the line
      * @param second The second of the two (not necessarily distinct)
@@ -78,7 +79,7 @@ public final class Line implements Edge {
      */
     public static Line create(final Vertex first, final Vertex second)
             throws IllegalArgumentException {
-        return new Line(first, second, null);
+        return new Line(first, second, Optional.empty());
     }
 
     /**
@@ -95,7 +96,7 @@ public final class Line implements Edge {
     public static Line create(final Vertex first, final Vertex second,
             final Comparable weight) throws IllegalArgumentException {
         Preconditions.notNull(weight, "weight == null");
-        return new Line(first, second, weight);
+        return new Line(first, second, Optional.of(weight));
     }
 
     @Override
@@ -104,7 +105,7 @@ public final class Line implements Edge {
     }
 
     @Override
-    public Comparable weight() {
+    public Optional<Comparable> weight() {
         return weight;
     }
 
@@ -138,3 +139,4 @@ public final class Line implements Edge {
         return Objects.equals(this.weight(), that.weight());
     }
 }
+

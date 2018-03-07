@@ -109,7 +109,7 @@ public final class ArrowTest {
 
         Arrow arrow = Arrow.create(vertex, vertex, weight);
 
-        Assert.assertEquals(weight, arrow.weight());
+        Assert.assertEquals(weight, arrow.weight().get());
     }
 
     /**

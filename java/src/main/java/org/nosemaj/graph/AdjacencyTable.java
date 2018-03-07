@@ -104,7 +104,8 @@ public final class AdjacencyTable implements Graph {
     @Override
     public void add(final Edge edge) throws IllegalArgumentException {
         Preconditions.notNull(edge, "edge == null");
-        Preconditions.isNull(edge.weight(), "weighted edges not supported.");
+        Preconditions.isFalse(edge.weight().isPresent(),
+                "weighted edges not supported.");
 
         List<Vertex> vertices = edge.endpoints();
         addAdjacency(vertices.get(0), vertices.get(1));
@@ -181,3 +182,4 @@ public final class AdjacencyTable implements Graph {
         return neighbors(vertices.get(0)).contains(vertices.get(1));
     }
 }
+

@@ -104,7 +104,7 @@ public final class LineTest {
 
         Line line = Line.create(first, second, weight);
 
-        Assert.assertEquals(weight, line.weight());
+        Assert.assertEquals(weight, line.weight().get());
     }
 
     /**

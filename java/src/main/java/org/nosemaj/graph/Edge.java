@@ -17,6 +17,7 @@
 package org.nosemaj.graph;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Edges are connections between two vertices.
@@ -35,8 +36,9 @@ interface Edge {
     List<Vertex> endpoints();
 
     /**
-     * Gets the weight of the edge.
-     * @return A weight value for the edge
+     * Gets the weight of the edge; may not be present.
+     * @return An optional weight value for the edge
      */
-    Comparable weight();
+    Optional<Comparable> weight();
 }
+

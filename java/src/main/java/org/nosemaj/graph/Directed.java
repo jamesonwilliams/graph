@@ -35,3 +35,4 @@ public interface Directed<S, T> {
      */
     T target();
 }
+

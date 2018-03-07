@@ -19,8 +19,9 @@ package org.nosemaj.graph;
 import org.nosemaj.graph.util.Preconditions;
 import org.nosemaj.graph.util.ImmutableList;
 
-import java.util.Objects;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Arrow is an edge that distinguishes endpoints into source and
@@ -42,17 +43,18 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
     /**
      * The weight of the arrow.
      */
-    private final Comparable weight;
+    private final Optional<Comparable> weight;
 
     /**
      * Constructs a new weighted Arrow.
      * @param source The source vertex
      * @param target The target vertex
-     * @param weight The weight of the arrow
+     * @param weight An optional weight of the arrow
      * @throws IllegalArgumentException If any argument is null
      */
     private Arrow(final Vertex source, final Vertex target,
-            final Comparable weight) throws IllegalArgumentException {
+            final Optional<Comparable> weight)
+            throws IllegalArgumentException {
 
         Preconditions.notNull(source, "source must be non-null.");
         Preconditions.notNull(target, "target must be non-null.");
@@ -73,11 +75,11 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
     public static Arrow create(final Vertex source, final Vertex target,
             final Comparable weight) throws IllegalArgumentException {
         Preconditions.notNull(weight, "weight == null.");
-        return new Arrow(source, target, weight);
+        return new Arrow(source, target, Optional.of(weight));
     }
 
     /**
-     * Creates a new Arrow.
+     * Creates a new unweighted Arrow.
      * @param source The source vertex
      * @param target The target vertex
      * @return An arrow from source to target
@@ -85,7 +87,7 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
      */
     public static Arrow create(final Vertex source, final Vertex target)
             throws IllegalArgumentException {
-        return new Arrow(source, target, null);
+        return new Arrow(source, target, Optional.empty());
     }
 
     @Override
@@ -104,7 +106,7 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
     }
 
     @Override
-    public Comparable weight() {
+    public Optional<Comparable> weight() {
         return this.weight;
     }
 
@@ -142,3 +144,4 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
         return Objects.equals(this.weight(), that.weight());
     }
 }
+

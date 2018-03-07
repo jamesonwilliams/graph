@@ -19,3 +19,4 @@
  * implemenation of the graph package.
  */
 package org.nosemaj.graph.util;
+

@@ -19,3 +19,4 @@
  * actors of a generic Graph.
  */
 package org.nosemaj.graph;
+
