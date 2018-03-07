@@ -18,28 +18,32 @@ package org.nosemaj.graph;
 
 import org.nosemaj.graph.util.Preconditions;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
  * AdjacencyTable is a Graph which is implemented by means of
- * maintaining an table of adjencies that exist between vertices.
+ * maintaining a table of the adjacencies that exist between vertices.
  */
 public final class AdjacencyTable implements Graph {
 
     /**
-     * Map of neighbors for all vertices.
+     * For each vertex, a table of its adjacent vertices and the weights
+     * to reach them.
      */
-    private final Map<Vertex, Set<Vertex>> neighbors;
+    private final Map<Vertex, Map<Vertex, Optional<Comparable>>> neighbors;
 
     /**
-     * Constructs a new AdjacencyTableGraph from an neighbors table.
+     * Constructs a new AdjacencyTable from a neighbors table.
      * @param neighbors A table of all vertices' neighboring vertices
      */
-    AdjacencyTable(final Map<Vertex, Set<Vertex>> neighbors) {
+    AdjacencyTable(
+            final Map<Vertex, Map<Vertex, Optional<Comparable>>> neighbors) {
+
         Preconditions.notNull(neighbors, "neighbors == null");
         this.neighbors = neighbors;
     }
@@ -49,7 +53,7 @@ public final class AdjacencyTable implements Graph {
      * @return A new adjacencty table
      */
     public static AdjacencyTable create() {
-        return new AdjacencyTable(new HashMap<Vertex, Set<Vertex>>());
+        return new AdjacencyTable(new HashMap<>());
     }
 
     @Override
@@ -58,7 +62,12 @@ public final class AdjacencyTable implements Graph {
         Preconditions.isTrue(contains(vertex),
                 "vertex does not exist in graph.");
 
-        return neighbors.get(vertex);
+        return Collections.unmodifiableSet(neighbors.get(vertex).keySet());
+    }
+
+    @Override
+    public Map<Vertex, Optional<Comparable>> weights(final Vertex vertex) {
+        return Collections.unmodifiableMap(neighbors.get(vertex));
     }
 
     @Override
@@ -66,7 +75,7 @@ public final class AdjacencyTable implements Graph {
         Preconditions.notNull(vertex, "vertex == null");
         Preconditions.isFalse(contains(vertex), "vertex is already in graph.");
 
-        neighbors.put(vertex, new HashSet<>());
+        neighbors.put(vertex, new HashMap<>());
     }
 
     @Override
@@ -83,8 +92,8 @@ public final class AdjacencyTable implements Graph {
          * neighbors list is O(1), but we may perform up that up to as
          * many times as there are vertices in the graph.
          */
-        for (Set<Vertex> values : neighbors.values()) {
-            if (values.contains(vertex)) {
+        for (Map<Vertex, Optional<Comparable>> values : neighbors.values()) {
+            if (values.containsKey(vertex)) {
                 values.remove(vertex);
             }
         }
@@ -97,89 +106,87 @@ public final class AdjacencyTable implements Graph {
     }
 
     @Override
+    public boolean containsAll(final Collection<Vertex> vertices) {
+        Preconditions.notNull(vertices, "vertices == null");
+        return vertices().containsAll(vertices);
+    }
+
+    @Override
     public Set<Vertex> vertices() {
-        return neighbors.keySet();
+        return Collections.unmodifiableSet(neighbors.keySet());
     }
 
     @Override
     public void add(final Edge edge) throws IllegalArgumentException {
         Preconditions.notNull(edge, "edge == null");
-        Preconditions.isFalse(edge.weight().isPresent(),
-                "weighted edges not supported.");
+        Preconditions.isTrue(containsAll(edge.endpoints()),
+                "Endpoint(s) not in graph.");
 
-        List<Vertex> vertices = edge.endpoints();
-        addAdjacency(vertices.get(0), vertices.get(1));
+        Vertex vertex = edge.endpoints().get(0);
+        Vertex adjacent = edge.endpoints().get(1);
+
+        // Don't allow multigraphs; neighbors table wouldn't immediately
+        // support this.
+        Preconditions.isFalse(neighbors.get(vertex).containsKey(adjacent),
+                "Relationship already exists between vertices.");
+
+        neighbors.get(vertex).put(adjacent, edge.weight());
         if (edge instanceof Line) {
-            addAdjacency(vertices.get(1), vertices.get(0));
+            neighbors.get(adjacent).put(vertex, edge.weight());
         }
-    }
-
-    /**
-     * Adds an adjacency entry to the neighbors table.
-     * @param vertex A vertex
-     * @param adjacent A vertex which is adjacent to vertex
-     * @throws IllegalArgumentException
-     *         If the relationship already exists, or if one of the
-     *         provided vertices is not known to the graph
-     */
-    private void addAdjacency(final Vertex vertex, final Vertex adjacent)
-            throws IllegalArgumentException {
-
-        Preconditions.isTrue(contains(vertex), "Endpoint(s) not in graph.");
-        Preconditions.isTrue(contains(adjacent), "Endpoint(s) not in graph.");
-        Preconditions.isFalse(neighbors(vertex).contains(adjacent),
-                "Edge exists in graph.");
-
-        neighbors(vertex).add(adjacent);
     }
 
     @Override
     public void remove(final Edge edge) throws IllegalArgumentException {
         Preconditions.notNull(edge, "edge == null");
+        Preconditions.isTrue(contains(edge), "Edge not in graph.");
 
-        List<Vertex> vertices = edge.endpoints();
-        removeAdjacency(vertices.get(0), vertices.get(1));
+        Vertex vertex = edge.endpoints().get(0);
+        Vertex adjacent = edge.endpoints().get(1);
+
+        neighbors.get(vertex).remove(adjacent);
         if (edge instanceof Line) {
-            removeAdjacency(vertices.get(1), vertices.get(0));
+            neighbors.get(adjacent).remove(vertex);
         }
-    }
-
-    /**
-     * Removes an adjacency from the neighbors table.
-     * @param vertex The vertex from which an adjacency exists
-     * @param adjacent The node adjacent to the vertex
-     * @throws IllegalArgumentException
-     *         If there was no such adjacency in the table, or if either
-     *         vertex is not known to the graph
-     */
-    private void removeAdjacency(final Vertex vertex, final Vertex adjacent)
-            throws IllegalArgumentException {
-
-        Preconditions.isTrue(contains(vertex), "Endpoints not in graph.");
-        Preconditions.isTrue(contains(adjacent), "Endpoints not in graph.");
-        Preconditions.isTrue(neighbors(vertex).contains(adjacent),
-                "Edge not in graph.");
-
-        neighbors(vertex).remove(adjacent);
     }
 
     @Override
     public boolean contains(final Edge edge) {
         Preconditions.notNull(edge, "edge == null");
+        Preconditions.isTrue(containsAll(edge.endpoints()),
+                "Edge endpoint(s) not in graph.");
 
-        List<Vertex> vertices = edge.endpoints();
-        Preconditions.isTrue(contains(vertices.get(0)),
-                "Edge endpoint(s) not in graph.");
-        Preconditions.isTrue(contains(vertices.get(1)),
-                "Edge endpoint(s) not in graph.");
+        Vertex vertex = edge.endpoints().get(0);
+        Vertex adjacent = edge.endpoints().get(1);
 
         if (edge instanceof Line) {
-            if (!neighbors(vertices.get(1)).contains(vertices.get(0))) {
+            if (!hasNeighborEntry(adjacent, vertex, edge.weight())) {
                 return false;
             }
         }
 
-        return neighbors(vertices.get(0)).contains(vertices.get(1));
+        return hasNeighborEntry(vertex, adjacent, edge.weight());
+    }
+
+    /**
+     * Checks if the neighbors table has an entry from the given vertex,
+     * to the given adjacent vertex, with the given weight.
+     * @param vertex Key in the neighbors table, known to exist
+     * @param adjacent Key into the values map returned for vertex,
+     *                 known to exist in the neighbors table
+     * @param weight Weight expected for the value associated with
+     *               adjacent
+     * @return true if the neigbors table has an entry matching the
+     *         provided criteria; false, otherwise
+     */
+    private boolean hasNeighborEntry(final Vertex vertex,
+            final Vertex adjacent, final Optional<Comparable> weight) {
+
+        if (!neighbors.get(vertex).containsKey(adjacent)) {
+            return false;
+        }
+
+        return neighbors.get(vertex).get(adjacent).equals(weight);
     }
 }
 

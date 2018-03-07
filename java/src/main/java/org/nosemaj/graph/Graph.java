@@ -16,6 +16,9 @@
 
 package org.nosemaj.graph;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -34,6 +37,18 @@ public interface Graph {
      *         If vertex is not known to the graph
      */
     Set<Vertex> neighbors(Vertex vertex) throws IllegalArgumentException;
+
+    /**
+     * Gets the weights associated with each of the neighbors of a
+     * vertex.
+     * @param vertex An arbitrary vertex
+     * @return A map from each neighbor to the weight between the vertex
+     *         and that neighbor
+     * @throws IllegalArgumentException
+     *         If vertex is not known to the graph
+     */
+    Map<Vertex, Optional<Comparable>> weights(Vertex vertex)
+            throws IllegalArgumentException;
 
     /**
      * Adds a vertex to the graph, if it's not already there.
@@ -55,8 +70,19 @@ public interface Graph {
      * Checks if a vertex is in the graph.
      * @param vertex A vertex that may be in the graph
      * @return true if the vertex is in the graph; false, otherwise
+     * @throws IllegalArgumentException if vertex is null
      */
-    boolean contains(Vertex vertex);
+    boolean contains(Vertex vertex) throws IllegalArgumentException;
+
+    /**
+     * Checks if a collection of vertices are all in the graph.
+     * @param vertices Vertices which may or may not be in the graph.
+     * @return true if all of the vertices are in the graph; false,
+     *         otherwise
+     * @throws IllegalArgumentException if vertices is null
+     */
+    boolean containsAll(Collection<Vertex> vertices)
+            throws IllegalArgumentException;
 
     /**
      * Gets the vertex set.

@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -110,6 +112,71 @@ public final class AdjacencyTableTest {
 
         Assert.assertEquals(1, neighbors.size());
         Assert.assertTrue(neighbors.contains(numeric));
+    }
+
+    /**
+     * Calling neighbors should return an unmodifiable view of the
+     * neighboring vertices.
+     * @throws UnsupportedOperationException expected behaviour
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void neighborsReturnsUnmodifiableSet() {
+        Graph graph = AdjacencyTable.create();
+        Vertex<Long> first = Vertex.create(random.nextLong());
+        graph.add(first);
+        Vertex<Boolean> second = Vertex.create(random.nextBoolean());
+
+        graph.neighbors(first).add(second);
+    }
+
+    /**
+     * When the adjaceny table is empty, the weights map should also be
+     * empty.
+     */
+    @Test
+    public void weightsReturnsEmptySetForEmptyTable() {
+        Graph graph = AdjacencyTable.create();
+        Vertex<Long> vertex = Vertex.create(random.nextLong());
+        graph.add(vertex);
+        Assert.assertTrue(graph.weights(vertex).isEmpty());
+    }
+
+    /**
+     * Calling weights should return an unmodifiable map.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void weightsReturnsUnmodifiableMap() {
+        Graph graph = AdjacencyTable.create();
+        Vertex<Long> first = Vertex.create(random.nextLong());
+        Vertex<Boolean> second = Vertex.create(random.nextBoolean());
+        graph.add(first);
+        graph.add(second);
+
+        Optional<Comparable> weight = Optional.of(random.nextLong());
+        graph.weights(first).put(second, weight);
+    }
+
+    /**
+     * Calling weights should return a map of vertices and the weights
+     * to get to those vertices, matching the edges that were provided
+     * to the graph.
+     */
+    @Test
+    public void weightsReturnsCorrectWeightsForProvidedEdges() {
+        Graph graph = AdjacencyTable.create();
+        Vertex<Integer> first = Vertex.create(random.nextInt());
+        Vertex<Integer> second = Vertex.create(random.nextInt());
+        graph.add(first);
+        graph.add(second);
+        Integer weight = random.nextInt();
+        graph.add(Arrow.create(first, second, weight));
+
+        Map<Vertex, Optional<Comparable>> weights = graph.weights(first);
+        Assert.assertTrue(weights.containsKey(second));
+        Assert.assertTrue(weights.get(second).isPresent());
+
+        Comparable actualWeight = weights.get(second).get();
+        Assert.assertEquals(weight, actualWeight);
     }
 
     /**
@@ -270,6 +337,17 @@ public final class AdjacencyTableTest {
         Assert.assertFalse(graph.vertices().isEmpty());
         Assert.assertEquals(1, graph.vertices().size());
         Assert.assertTrue(graph.vertices().contains(vertex));
+    }
+
+    /**
+     * The set of vertices returned by vertices() should be
+     * unmodifiable.
+     */
+    @Test(expected = UnsupportedOperationException.class)
+    public void verticesReturnsUnmodifiableSet() {
+        Graph graph = AdjacencyTable.create();
+        Vertex vertex = Vertex.create(random.nextInt());
+        graph.vertices().add(vertex);
     }
 
     /**
