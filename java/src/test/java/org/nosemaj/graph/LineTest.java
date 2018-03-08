@@ -100,7 +100,7 @@ public final class LineTest {
     public void weightShouldReturnValueFromCreate() {
         Vertex<Object> first = Vertex.create(new Object());
         Vertex<Object> second = Vertex.create(new Object());
-        Boolean weight = random.nextBoolean();
+        Weight<Long> weight = Weight.of(random.nextLong());
 
         Line line = Line.create(first, second, weight);
 
@@ -202,10 +202,11 @@ public final class LineTest {
     public void equalsShouldReturnFalseWhenWeightsDiffer() {
         Vertex<Long> firstVertex = Vertex.create(random.nextLong());
         Vertex<Long> secondVertex = Vertex.create(random.nextLong());
-        Boolean weight = random.nextBoolean();
+        Weight<Float> firstWeight = Weight.of(random.nextFloat());
+        Weight<Float> secondWeight = Weight.of(random.nextFloat());
 
-        Line first = Line.create(firstVertex, secondVertex, weight);
-        Line second = Line.create(firstVertex, secondVertex, !weight);
+        Line first = Line.create(firstVertex, secondVertex, firstWeight);
+        Line second = Line.create(firstVertex, secondVertex, secondWeight);
 
         Assert.assertNotEquals(first, second);
     }
@@ -248,10 +249,11 @@ public final class LineTest {
     public void hashCodeShouldReturnDifferentCodeWhenDifferentWeights() {
         Vertex<Long> firstVertex = Vertex.create(random.nextLong());
         Vertex<Long> secondVertex = Vertex.create(random.nextLong());
-        Boolean weight = random.nextBoolean();
+        Weight<Double> firstWeight = Weight.of(random.nextDouble());
+        Weight<Double> secondWeight = Weight.of(random.nextDouble());
 
-        Line first = Line.create(firstVertex, secondVertex, weight);
-        Line second = Line.create(firstVertex, secondVertex, !weight);
+        Line first = Line.create(firstVertex, secondVertex, firstWeight);
+        Line second = Line.create(firstVertex, secondVertex, secondWeight);
 
         Assert.assertNotEquals(first.hashCode(), second.hashCode());
     }

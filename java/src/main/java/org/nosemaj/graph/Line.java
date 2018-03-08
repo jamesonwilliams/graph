@@ -41,7 +41,7 @@ public final class Line implements Edge {
     /**
      * The weight of the line.
      */
-    private final Optional<Comparable> weight;
+    private final Optional<Weight> weight;
 
     /**
      * Constructs a new weighted Line.
@@ -54,7 +54,7 @@ public final class Line implements Edge {
      *         If either vertex is null, or if they are equal
      */
     private Line(final Vertex first, final Vertex second,
-            final Optional<Comparable> weight) {
+            final Optional<Weight> weight) {
 
         Preconditions.notNull(first, "first vertex must be non-null.");
         Preconditions.notNull(second, "second vertex must be non-null.");
@@ -94,7 +94,7 @@ public final class Line implements Edge {
      *         If any argument is null, or if vertices are equal
      */
     public static Line create(final Vertex first, final Vertex second,
-            final Comparable weight) throws IllegalArgumentException {
+            final Weight weight) throws IllegalArgumentException {
         Preconditions.notNull(weight, "weight == null");
         return new Line(first, second, Optional.of(weight));
     }
@@ -105,7 +105,7 @@ public final class Line implements Edge {
     }
 
     @Override
-    public Optional<Comparable> weight() {
+    public Optional<Weight> weight() {
         return weight;
     }
 

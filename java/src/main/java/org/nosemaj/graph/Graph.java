@@ -47,7 +47,7 @@ public interface Graph {
      * @throws IllegalArgumentException
      *         If vertex is not known to the graph
      */
-    Map<Vertex, Optional<Comparable>> weights(Vertex vertex)
+    Map<Vertex, Optional<Weight>> weights(Vertex vertex)
             throws IllegalArgumentException;
 
     /**

@@ -105,7 +105,7 @@ public final class ArrowTest {
     @Test
     public void weightShouldReturnValueFromCreate() {
         Vertex<Long> vertex = Vertex.create(random.nextLong());
-        Boolean weight = random.nextBoolean();
+        Weight<Integer> weight = Weight.of(random.nextInt());
 
         Arrow arrow = Arrow.create(vertex, vertex, weight);
 
@@ -209,10 +209,12 @@ public final class ArrowTest {
     public void equalsShouldReturnFalseWhenWeightsDiffer() {
         Vertex<Long> firstVertex = Vertex.create(random.nextLong());
         Vertex<Long> secondVertex = Vertex.create(random.nextLong());
-        Boolean weight = random.nextBoolean();
 
-        Arrow first = Arrow.create(firstVertex, secondVertex, weight);
-        Arrow second = Arrow.create(firstVertex, secondVertex, !weight);
+        Weight<Double> firstWeight = Weight.of(random.nextDouble());
+        Weight<Double> secondWeight = Weight.of(random.nextDouble());
+
+        Arrow first = Arrow.create(firstVertex, secondVertex, firstWeight);
+        Arrow second = Arrow.create(firstVertex, secondVertex, secondWeight);
 
         Assert.assertNotEquals(first, second);
     }
@@ -272,10 +274,12 @@ public final class ArrowTest {
     public void hashCodeShouldReturnDifferentCodeWhenDifferentWeights() {
         Vertex<Long> source = Vertex.create(random.nextLong());
         Vertex<Long> target = Vertex.create(random.nextLong());
-        Boolean weight = random.nextBoolean();
 
-        Arrow first = Arrow.create(source, target, weight);
-        Arrow second = Arrow.create(source, target, !weight);
+        Weight<Integer> firstWeight = Weight.of(random.nextInt());
+        Weight<Integer> secondWeight = Weight.of(random.nextInt());
+
+        Arrow first = Arrow.create(source, target, firstWeight);
+        Arrow second = Arrow.create(source, target, secondWeight);
 
         Assert.assertNotEquals(first.hashCode(), second.hashCode());
     }

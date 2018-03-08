@@ -43,7 +43,7 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
     /**
      * The weight of the arrow.
      */
-    private final Optional<Comparable> weight;
+    private final Optional<Weight> weight;
 
     /**
      * Constructs a new weighted Arrow.
@@ -53,7 +53,7 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
      * @throws IllegalArgumentException If any argument is null
      */
     private Arrow(final Vertex source, final Vertex target,
-            final Optional<Comparable> weight)
+            final Optional<Weight> weight)
             throws IllegalArgumentException {
 
         Preconditions.notNull(source, "source must be non-null.");
@@ -73,7 +73,7 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
      * @throws IllegalArgumentException If any argument is null
      */
     public static Arrow create(final Vertex source, final Vertex target,
-            final Comparable weight) throws IllegalArgumentException {
+            final Weight weight) throws IllegalArgumentException {
         Preconditions.notNull(weight, "weight == null.");
         return new Arrow(source, target, Optional.of(weight));
     }
@@ -106,7 +106,7 @@ public final class Arrow implements Edge, Directed<Vertex, Vertex> {
     }
 
     @Override
-    public Optional<Comparable> weight() {
+    public Optional<Weight> weight() {
         return this.weight;
     }
 

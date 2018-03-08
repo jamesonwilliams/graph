@@ -35,14 +35,14 @@ public final class AdjacencyTable implements Graph {
      * For each vertex, a table of its adjacent vertices and the weights
      * to reach them.
      */
-    private final Map<Vertex, Map<Vertex, Optional<Comparable>>> neighbors;
+    private final Map<Vertex, Map<Vertex, Optional<Weight>>> neighbors;
 
     /**
      * Constructs a new AdjacencyTable from a neighbors table.
      * @param neighbors A table of all vertices' neighboring vertices
      */
     AdjacencyTable(
-            final Map<Vertex, Map<Vertex, Optional<Comparable>>> neighbors) {
+            final Map<Vertex, Map<Vertex, Optional<Weight>>> neighbors) {
 
         Preconditions.notNull(neighbors, "neighbors == null");
         this.neighbors = neighbors;
@@ -66,7 +66,7 @@ public final class AdjacencyTable implements Graph {
     }
 
     @Override
-    public Map<Vertex, Optional<Comparable>> weights(final Vertex vertex) {
+    public Map<Vertex, Optional<Weight>> weights(final Vertex vertex) {
         return Collections.unmodifiableMap(neighbors.get(vertex));
     }
 
@@ -92,7 +92,7 @@ public final class AdjacencyTable implements Graph {
          * neighbors list is O(1), but we may perform up that up to as
          * many times as there are vertices in the graph.
          */
-        for (Map<Vertex, Optional<Comparable>> values : neighbors.values()) {
+        for (Map<Vertex, Optional<Weight>> values : neighbors.values()) {
             if (values.containsKey(vertex)) {
                 values.remove(vertex);
             }
@@ -180,7 +180,7 @@ public final class AdjacencyTable implements Graph {
      *         provided criteria; false, otherwise
      */
     private boolean hasNeighborEntry(final Vertex vertex,
-            final Vertex adjacent, final Optional<Comparable> weight) {
+            final Vertex adjacent, final Optional<Weight> weight) {
 
         if (!neighbors.get(vertex).containsKey(adjacent)) {
             return false;

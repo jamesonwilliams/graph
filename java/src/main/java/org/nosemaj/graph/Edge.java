@@ -39,6 +39,6 @@ interface Edge {
      * Gets the weight of the edge; may not be present.
      * @return An optional weight value for the edge
      */
-    Optional<Comparable> weight();
+    Optional<Weight> weight();
 }
 

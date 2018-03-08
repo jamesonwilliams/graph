@@ -152,7 +152,7 @@ public final class AdjacencyTableTest {
         graph.add(first);
         graph.add(second);
 
-        Optional<Comparable> weight = Optional.of(random.nextLong());
+        Optional<Weight> weight = Optional.of(Weight.of(random.nextLong()));
         graph.weights(first).put(second, weight);
     }
 
@@ -168,14 +168,14 @@ public final class AdjacencyTableTest {
         Vertex<Integer> second = Vertex.create(random.nextInt());
         graph.add(first);
         graph.add(second);
-        Integer weight = random.nextInt();
+        Weight<Integer> weight = Weight.of(random.nextInt());
         graph.add(Arrow.create(first, second, weight));
 
-        Map<Vertex, Optional<Comparable>> weights = graph.weights(first);
+        Map<Vertex, Optional<Weight>> weights = graph.weights(first);
         Assert.assertTrue(weights.containsKey(second));
         Assert.assertTrue(weights.get(second).isPresent());
 
-        Comparable actualWeight = weights.get(second).get();
+        Weight actualWeight = weights.get(second).get();
         Assert.assertEquals(weight, actualWeight);
     }
 
@@ -411,7 +411,7 @@ public final class AdjacencyTableTest {
     @Test(expected = IllegalArgumentException.class)
     public void addWeightedEdgeThrowsException() {
         Vertex<Boolean> vertex = Vertex.create(null);
-        Comparable weight = random.nextLong();
+        Weight<Long> weight = Weight.of(random.nextLong());
         Edge edge = Arrow.create(vertex, vertex, weight);
         AdjacencyTable.create().add(edge);
     }
